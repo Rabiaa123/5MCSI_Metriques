@@ -4,7 +4,9 @@ from flask import json
 from datetime import datetime
 from urllib.request import urlopen
 import sqlite3
-                                                                                                                                       
+
+datetime.utcfromtimestamp(dt_value).strftime('%Y-%m-%d %H:%M:%S')
+
 app = Flask(__name__)                                                                                                                  
                                                                                                                                        
 @app.route('/')
