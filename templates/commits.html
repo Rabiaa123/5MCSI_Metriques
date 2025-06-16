@@ -1,43 +1,46 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Commits par Minute</title>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta charset="UTF-8">
+    <title>Graphique des Commits</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2 style="text-align:center;">Activité des commits GitHub (par minute)</h2>
-  <div id="chart_div" style="width: 90%; height: 500px; margin: auto;"></div>
+    <h2>Commits GitHub par minute</h2>
+    <canvas id="commitChart" width="800" height="400"></canvas>
 
-  <script>
-    google.charts.load('current', { packages: ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
+    <script>
+        // Charger les données de l'API Flask
+        fetch("/commits/")
+            .then(response => response.json())
+            .then(data => {
+                const results = data.results;
 
-    function drawChart() {
-      fetch('/commits/')
-        .then(response => response.json())
-        .then(data => {
-          var dataTable = new google.visualization.DataTable();
-          dataTable.addColumn('string', 'Minute');
-          dataTable.addColumn('number', 'Nombre de commits');
+                // Extraire les minutes et les valeurs de commits
+                const labels = results.map(item => item.minute);
+                const values = results.map(item => item.commits);
 
-          data.results.forEach(entry => {
-            dataTable.addRow([entry.minute.toString(), entry.commits]);
-          });
-
-          var options = {
-            title: 'Nombre de commits GitHub par minute',
-            hAxis: { title: 'Minute', minValue: 0, maxValue: 59 },
-            vAxis: { title: 'Commits' },
-            legend: { position: 'none' },
-            colors: ['#3366cc']
-          };
-
-          var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-          chart.draw(dataTable, options);
-        });
-    }
-  </script>
+                const ctx = document.getElementById('commitChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Commits par minute',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'blue',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { title: { display: true, text: "Minute (0-59)" } }
+                        }
+                    }
+                });
+            });
+    </script>
 </body>
 </html>
-
