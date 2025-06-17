@@ -2,45 +2,69 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Graphique des Commits</title>
+    <title>Commits par minute</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 2em;
+        }
+        canvas {
+            max-width: 800px;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-    <h2>Commits GitHub par minute</h2>
-    <canvas id="commitChart" width="800" height="400"></canvas>
+    <h1>Nombre de commits par minute</h1>
+    <canvas id="commitsChart"></canvas>
 
     <script>
-        // Charger les données de l'API Flask
-        fetch("/commits/")
+        fetch('/api/commits/')
             .then(response => response.json())
             .then(data => {
                 const results = data.results;
-
-                // Extraire les minutes et les valeurs de commits
                 const labels = results.map(item => item.minute);
-                const values = results.map(item => item.commits);
+                const counts = results.map(item => item.commits);
 
-                const ctx = document.getElementById('commitChart').getContext('2d');
+                const ctx = document.getElementById('commitsChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Commits par minute',
-                            data: values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'blue',
+                            label: 'Commits',
+                            data: counts,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         }]
                     },
                     options: {
+                        responsive: true,
                         scales: {
-                            y: { beginAtZero: true },
-                            x: { title: { display: true, text: "Minute (0-59)" } }
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Minute'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Nombre de commits'
+                                }
+                            }
                         }
                     }
                 });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des données :', error);
             });
     </script>
 </body>
 </html>
+
