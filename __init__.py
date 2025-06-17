@@ -36,8 +36,8 @@ def mon_histogramme():
 def contact_form():
     return render_template("contact.html")
 
-@app.route('/commits/')
-def commits():
+@app.route('/api/commits/')
+def api_commits():
     url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
     response = urlopen(url)
     raw_data = response.read()
@@ -50,14 +50,14 @@ def commits():
             date_obj = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
             minutes_list.append(date_obj.minute)
 
-    # Compter le nombre de commits par minute
     count_per_minute = dict(Counter(minutes_list))
     results = [{'minute': minute, 'commits': count} for minute, count in sorted(count_per_minute.items())]
 
     return jsonify(results=results)
 
+# Route pour la page avec le graphique
 @app.route('/commits/')
-def graph_commits():
+def commits():
     return render_template("commits.html")
   
 if __name__ == "__main__":
