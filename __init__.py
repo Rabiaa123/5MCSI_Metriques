@@ -56,7 +56,7 @@ def commits():
 
     return jsonify(results=results)
 
-@app.route('/graph-commits/')
+@app.route('/commits/')
 def graph_commits():
     return render_template("commits.html")
   
